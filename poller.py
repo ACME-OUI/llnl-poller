@@ -5,23 +5,30 @@ import json
 
 from constants import FRONTEND_POLLER_HOST
 from util import print_debug, print_message
-from start_diag_handler import StartDiagHandler
-from start_model_handler import start_model_handler
-from update_job_handler import UpdateJobHandler
+from handlers.start_diag_handler import StartDiagHandler
+from handlers.start_model_handler import StartModelHandler
+from handlers.update_job_handler import UpdateJobHandler
 
 def poll():
 
     params = {'request': 'next'}
-    url = 'http://' + FRONTEND_POLLER_HOST + '/update/next/'
+    url = 'http://' + FRONTEND_POLLER_HOST + '/update/'
     try:
         job = requests.get(url, params).content
+        job = json.loads(job)
+        print_message(job, 'ok')
     except Exception as e:
         print_message("Error requesting job from frontend poller")
         print_debug(e)
         return
 
+    if not job:
+        print_message('No new jobs')
+        return
+
     try:
-        options = json.loads(job.config_options)
+        options = job.get('request_attr')
+        print_message(options, 'ok')
     except Exception as e:
         print_debug(e)
         return

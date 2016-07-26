@@ -1,5 +1,5 @@
 
-class StopModelHandler(object):
+class StartModelHandler(object):
 
     def __init__(self, config):
         self.config = config
