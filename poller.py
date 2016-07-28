@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import time
 import requests
 import sys
@@ -33,7 +34,7 @@ def poll():
         print_debug(e)
         return
 
-    run_type = options.get('run_type')
+    run_type = job.get('run_type')
     if not run_type:
         print_message("No run type in job request")
         return
