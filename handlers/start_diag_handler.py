@@ -1,6 +1,7 @@
 from subprocess import Popen, PIPE
 from constants import DIAG_PATH_PREFIX, FRONTEND_POLLER_HOST
-from util import print_message
+from util import print_message, execute_in_virtualenv
+import requests
 
 
 class StartDiagHandler(object):
@@ -10,19 +11,25 @@ class StartDiagHandler(object):
         self.call_args = self.sanitize_input()
 
     def handle(self):
-
         print_message(self.call_args, 'ok')
-        if self.call_args:
-            #
-            #
-            #
-        return
+        output = execute_in_virtualenv(self.call_args)
+        return output
 
     def respond(self, response):
+        request = {
+            'id': self.config.get('id'),
+            'request': 'complete'
+            'output': response
+        }
+        url = 'http://' + FRONTEND_POLLER_HOST
+        try:
+            r = requests.post(url, request)
+        except Exception as e:
+            raise e
         return
 
     def sanitize_input(self):
-        args = []
+        args = ['srun', 'metadiags']
         path_prefix = "path=" + DIAG_PATH_PREFIX
         for x in self.config:
             option_key = ''
@@ -45,7 +52,8 @@ class StartDiagHandler(object):
             elif x == 'outputdir':
                 option_key = '--outputdir'
                 # Check for valid outputdir
-                option_val = path_prefix + self.config.get(x) + ',climos=yes'
+                run_suffix = self.config.get('user') + '/' + self.config.get('run_name')
+                option_val = path_prefix + run_suffix + self.config.get(x) + ',climos=yes'
             elif x == 'set':
                 option_key = '--set'
                 # Check for valid set

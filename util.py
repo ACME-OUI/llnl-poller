@@ -4,6 +4,7 @@ import os
 import shlex
 from subprocess import Popen, PIPE
 
+
 def print_debug(e):
     print '1', e.__doc__
     print '2', sys.exc_info()
@@ -37,7 +38,7 @@ def execute_in_virtualenv(command_list):
 
     commands = dedent(r'''
         from subprocess import Popen, PIPE
-        p = Popen(''' + command_list + ''', stdout=PIPE, stderr=PIPE, shell=False)
+        p = Popen(''' + str(command_list) + ''', stdout=PIPE, stderr=PIPE, shell=False)
         print p.communicate()
         ''')
 
