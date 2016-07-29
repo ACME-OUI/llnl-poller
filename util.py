@@ -44,5 +44,5 @@ def execute_in_virtualenv(command_list):
 
     command_template = '/bin/bash -c "source activate uvcdat && python -"'
     command = shlex.split(command_template)
-    process = Popen(command, stdin=PIPE, stdout=PIPE, stderr=PIPE, shell=False)
+    process = Popen(command, stdin=PIPE, stdout=PIPE, stderr=PIPE, shell=True)
     return process.communicate(commands)

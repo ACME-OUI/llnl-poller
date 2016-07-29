@@ -1,7 +1,12 @@
 from subprocess import Popen, PIPE
-from constants import DIAG_PATH_PREFIX, FRONTEND_POLLER_HOST
+from constants import DIAG_PATH_PREFIX
+from constants import FRONTEND_POLLER_HOST
+from constants import DIAG_OUTPUT_PREFIX
 from util import print_message, execute_in_virtualenv
+
 import requests
+import json
+import os
 
 
 class StartDiagHandler(object):
@@ -16,11 +21,11 @@ class StartDiagHandler(object):
         return output
 
     def respond(self, response):
-        request = {
+        request = json.dumps({
             'id': self.config.get('id'),
-            'request': 'complete'
+            'request': 'complete',
             'output': response
-        }
+        })
         url = 'http://' + FRONTEND_POLLER_HOST
         try:
             r = requests.post(url, request)
@@ -29,7 +34,7 @@ class StartDiagHandler(object):
         return
 
     def sanitize_input(self):
-        args = ['srun', 'metadiags']
+        args = ['metadiags']
         path_prefix = "path=" + DIAG_PATH_PREFIX
         for x in self.config:
             option_key = ''
@@ -52,8 +57,13 @@ class StartDiagHandler(object):
             elif x == 'outputdir':
                 option_key = '--outputdir'
                 # Check for valid outputdir
-                run_suffix = self.config.get('user') + '/' + self.config.get('run_name')
-                option_val = path_prefix + run_suffix + self.config.get(x) + ',climos=yes'
+                run_suffix = '/' + self.config.get('user') + '/' + self.config.get('run_name')
+                option_val = DIAG_OUTPUT_PREFIX + run_suffix + self.config.get(x)
+                if os.path.exists(option_val) and not os.path.isdir(option_val):
+                    print_message("Attempting to overwrite directory")
+                    return -1
+                if not os.path.exists(option_val):
+                    os.makedirs(option_val)
             elif x == 'set':
                 option_key = '--set'
                 # Check for valid set
