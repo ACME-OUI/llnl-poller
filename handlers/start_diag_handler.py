@@ -2,7 +2,8 @@ from subprocess import Popen, PIPE
 from constants import DIAG_PATH_PREFIX
 from constants import FRONTEND_POLLER_HOST
 from constants import DIAG_OUTPUT_PREFIX
-from util import print_message, execute_in_virtualenv
+from util import print_message
+from subprocess import Popen, PIPE
 
 import requests
 import json
@@ -17,8 +18,11 @@ class StartDiagHandler(object):
 
     def handle(self):
         print_message(self.call_args, 'ok')
-        output = execute_in_virtualenv(self.call_args)
-        return output
+        # First arg is the script to start a SLURM job
+        # the second is the command that SLURM is putting on the queue
+        command = ['./job_scripts/metadiags_run.sh'] + [str(self.call_args)]
+        process = Popen(, stdin=PIPE, stdout=PIPE, stderr=PIPE, shell=True)
+        return process.communicate(commands)
 
     def respond(self, response):
         request = json.dumps({
@@ -34,7 +38,7 @@ class StartDiagHandler(object):
         return
 
     def sanitize_input(self):
-        args = ['metadiags']
+        args = []
         path_prefix = "path=" + DIAG_PATH_PREFIX
         for x in self.config:
             option_key = ''

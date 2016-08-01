@@ -13,4 +13,4 @@ DIAG_PATH_PREFIX = '$HOME/diags'
 # because the poller and the dashboard should live on
 # differenct servers with a jointly mounted drive
 # but the configuration hasnt been hammered out yet
-DIAG_OUTPUT_PREFIX = '$HOME/Projects/acme-web-fe/run_manager/run_scripts/'
+DIAG_OUTPUT_PREFIX = '/Users/baldwin32/projects/acme-web-fe/userdata/'
