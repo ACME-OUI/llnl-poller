@@ -17,12 +17,11 @@ class StartDiagHandler(object):
         self.call_args = self.sanitize_input()
 
     def handle(self):
-        print_message(self.call_args, 'ok')
-        # First arg is the script to start a SLURM job
-        # the second is the command that SLURM is putting on the queue
-        command = ['./job_scripts/metadiags_run.sh'] + [str(self.call_args)]
+
+        command = ['./scripts/diag_run.sh'] + [' '.join(self.call_args)]
+        print_message(command, 'ok')
         process = Popen(command, stdin=PIPE, stdout=PIPE, stderr=PIPE, shell=True)
-        return process.communicate(commands)
+        return process.communicate()
 
     def respond(self, response):
         request = json.dumps({
@@ -61,8 +60,9 @@ class StartDiagHandler(object):
             elif x == 'outputdir':
                 option_key = '--outputdir'
                 # Check for valid outputdir
-                run_suffix = '/' + self.config.get('user') + '/' + self.config.get('run_name')
+                run_suffix = self.config.get('user') + '/' + self.config.get('run_name')
                 option_val = DIAG_OUTPUT_PREFIX + run_suffix + self.config.get(x)
+                print_message(option_val)
                 if os.path.exists(option_val) and not os.path.isdir(option_val):
                     print_message("Attempting to overwrite directory")
                     return -1
