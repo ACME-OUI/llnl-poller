@@ -21,7 +21,7 @@ class StartDiagHandler(object):
         # First arg is the script to start a SLURM job
         # the second is the command that SLURM is putting on the queue
         command = ['./job_scripts/metadiags_run.sh'] + [str(self.call_args)]
-        process = Popen(, stdin=PIPE, stdout=PIPE, stderr=PIPE, shell=True)
+        process = Popen(command, stdin=PIPE, stdout=PIPE, stderr=PIPE, shell=True)
         return process.communicate(commands)
 
     def respond(self, response):
