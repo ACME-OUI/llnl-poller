@@ -20,14 +20,14 @@ class StartDiagHandler(object):
 
         # command = ['./scripts/diag_run.sh'] + [' '.join(self.call_args)]
         print_message(self.call_args, 'ok')
-        process = Popen(self.call_args, stdin=PIPE, stdout=PIPE, stderr=PIPE, shell=False)
+        process = Popen(' '.join(self.call_args), stdin=PIPE, stdout=PIPE, stderr=PIPE, shell=True)
         return process.communicate()
         return output
 
 
     def respond(self, response):
         request = json.dumps({
-            'id': self.config.get('id'),
+            'id': self.config.get('job_id'),
             'request': 'complete',
             'output': response
         })

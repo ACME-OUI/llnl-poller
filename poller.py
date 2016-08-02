@@ -32,6 +32,7 @@ def poll():
         options = job.get('request_attr')
         options['user'] = job.get('user')
         options['run_name'] = job.get('run_name')
+        options['job_id'] = job.get('job_id')
         print_message(options, 'ok')
     except Exception as e:
         print_debug(e)
