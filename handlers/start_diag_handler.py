@@ -2,7 +2,7 @@ from subprocess import Popen, PIPE
 from constants import DIAG_PATH_PREFIX
 from constants import FRONTEND_POLLER_HOST
 from constants import DIAG_OUTPUT_PREFIX
-from util import print_message, execute_in_virtualenv
+from util import print_message
 from subprocess import Popen, PIPE
 
 import requests
@@ -20,7 +20,7 @@ class StartDiagHandler(object):
 
         # command = ['./scripts/diag_run.sh'] + [' '.join(self.call_args)]
         print_message(self.call_args, 'ok')
-        process = Popen(self.call_args, stdin=PIPE, stdout=PIPE, stderr=PIPE, shell=True)
+        process = Popen(self.call_args, stdin=PIPE, stdout=PIPE, stderr=PIPE, shell=False)
         return process.communicate()
         return output
 
