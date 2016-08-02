@@ -31,18 +31,3 @@ def print_message(message, status='error'):
         print colors.FAIL + '[-] ' + colors.ENDC + colors.BOLD + str(message) + colors.ENDC
     elif status == 'ok':
         print colors.OKGREEN + '[+] ' + colors.ENDC + str(message)
-
-
-def execute_in_virtualenv(command_list):
-    from textwrap import dedent
-
-    commands = dedent(r'''
-        from subprocess import Popen, PIPE
-        p = Popen(''' + str(command_list) + ''', stdout=PIPE, stderr=PIPE, shell=False)
-        print p.communicate()
-        ''')
-
-    command_template = '/bin/bash -c "source activate uvcdat && python -"'
-    command = shlex.split(command_template)
-    process = Popen(command, stdin=PIPE, stdout=PIPE, stderr=PIPE, shell=True)
-    return process.communicate(commands)

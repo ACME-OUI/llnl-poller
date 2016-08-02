@@ -2,7 +2,7 @@ from subprocess import Popen, PIPE
 from constants import DIAG_PATH_PREFIX
 from constants import FRONTEND_POLLER_HOST
 from constants import DIAG_OUTPUT_PREFIX
-from util import print_message
+from util import print_message, execute_in_virtualenv
 from subprocess import Popen, PIPE
 
 import requests
@@ -18,10 +18,12 @@ class StartDiagHandler(object):
 
     def handle(self):
 
-        command = ['./scripts/diag_run.sh'] + [' '.join(self.call_args)]
-        print_message(command, 'ok')
-        process = Popen(command, stdin=PIPE, stdout=PIPE, stderr=PIPE, shell=True)
+        # command = ['./scripts/diag_run.sh'] + [' '.join(self.call_args)]
+        print_message(self.call_args, 'ok')
+        process = Popen(self.call_args, stdin=PIPE, stdout=PIPE, stderr=PIPE, shell=True)
         return process.communicate()
+        return output
+
 
     def respond(self, response):
         request = json.dumps({
@@ -37,7 +39,7 @@ class StartDiagHandler(object):
         return
 
     def sanitize_input(self):
-        args = []
+        args = ['metadiags']
         path_prefix = "path=" + DIAG_PATH_PREFIX
         for x in self.config:
             option_key = ''
