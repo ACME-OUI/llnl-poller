@@ -19,7 +19,7 @@
 Change the constants.py FRONTEND_POLLER_HOST variable to the hostname of the dashboard if its not
 running on localhost.
 
-Install (UVCDAT)[https://github.com/UV-CDAT/uvcdat/wiki/install]
+Install [UVCDAT](https://github.com/UV-CDAT/uvcdat/wiki/install)
 Once uvcdat is installed
 
       source activate uvcdat
