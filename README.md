@@ -1,6 +1,5 @@
 # An ACME dashboard job poller for the LLNL mini cluster
-*** Issues ***
-* There is currently a bug in the argument passing to the subprocess call to start the diagnostic run_suffix
+***Issues***
 * The StartDiagHandler is the only implemented job request handler, next on the list are:
   - UpdateJobHandler
   - StopJobHandler
@@ -9,7 +8,7 @@
 
 
 
-*** setup ***
+***setup***
 
       git clone git@github.com:sterlingbaldwin/llnl-poller.git
       cd llnl-poller
@@ -26,7 +25,7 @@ Once uvcdat is installed
       source activate uvcdat
       pip install requests
 
-*** Running ***
+***Running***
 
 * The first step in the run process is to have the dashboard up and running
 * In a new terminal run
