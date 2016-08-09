@@ -27,7 +27,7 @@ class StartDiagHandler(object):
 
     def respond(self, response):
         request = json.dumps({
-            'id': self.config.get('job_id'),
+            'job_id': self.config.get('job_id'),
             'request': 'complete',
             'output': response
         })
