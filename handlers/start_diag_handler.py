@@ -59,7 +59,7 @@ class StartDiagHandler(object):
             elif x == 'obs_path':
                 option_key = '--obs'
                 # Check for valid obs path
-                option_val = path_prefix + self.config.get('user') + '/obvservations' + self.config.get(x) + ',climos=yes'
+                option_val = path_prefix + self.config.get('user') + '/observations' + self.config.get(x) + ',climos=yes'
             elif x == 'outputdir':
                 option_key = '--outputdir'
                 # Check for valid outputdir
