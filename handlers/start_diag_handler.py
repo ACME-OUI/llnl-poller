@@ -1,5 +1,6 @@
 from subprocess import Popen, PIPE
 from constants import USER_DATA_PREFIX
+from constants import FRONTEND_POLLER_HOST
 from util import print_message
 from subprocess import Popen, PIPE
 
@@ -63,7 +64,11 @@ class StartDiagHandler(object):
             elif x == 'outputdir':
                 option_key = '--outputdir'
                 # Check for valid outputdir
-                run_suffix = self.config.get('user') + '/' + self.config.get('user') + '/diagnostic_output/' + self.config.get('run_name') + '_' + str(self.config.get('job_id'))
+                run_suffix = self.config.get('user') + '/' \
+                    + '/diagnostic_output/' \
+                    + self.config.get('run_name') + '_' \
+                    + str(self.config.get('job_id'))
+
                 option_val = USER_DATA_PREFIX + run_suffix + self.config.get(x)
                 print_message(option_val)
                 if os.path.exists(option_val) and not os.path.isdir(option_val):
