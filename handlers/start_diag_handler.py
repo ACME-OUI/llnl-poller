@@ -1,7 +1,5 @@
 from subprocess import Popen, PIPE
-from constants import DIAG_PATH_PREFIX
-from constants import FRONTEND_POLLER_HOST
-from constants import DIAG_OUTPUT_PREFIX
+from constants import USER_DATA_PREFIX
 from util import print_message
 from subprocess import Popen, PIPE
 
@@ -19,14 +17,16 @@ class StartDiagHandler(object):
     def handle(self):
 
         # command = ['./scripts/diag_run.sh'] + [' '.join(self.call_args)]
-        print_message("Starting job with arguments: {}".format(self.call_args), 'ok')
-        process = Popen(' '.join(self.call_args), stdin=PIPE, stdout=PIPE, stderr=PIPE, shell=True)
+        msg = "Starting job with arguments: {}".format(self.call_args)
+        print_message(msg, 'ok')
+        args = ' '.join(self.call_args)
+        process = Popen(args, stdin=PIPE, stdout=PIPE, stderr=PIPE, shell=True)
         return process.communicate()
         return output
 
-
     def respond(self, response):
-        print_message("Sending complete job to the dashboard with response {}".format(response), 'ok')
+        msg = "Sending complete job to the dashboard with response {}".format(response)
+        print_message(msg, 'ok')
         request = json.dumps({
             'job_id': self.config.get('job_id'),
             'request': 'complete',
@@ -41,7 +41,7 @@ class StartDiagHandler(object):
 
     def sanitize_input(self):
         args = ['metadiags']
-        path_prefix = "path=" + DIAG_PATH_PREFIX
+        path_prefix = "path=" + USER_DATA_PREFIX
         for x in self.config:
             option_key = ''
             option_val = ''
@@ -55,16 +55,16 @@ class StartDiagHandler(object):
             elif x == 'model_path':
                 option_key = "--model "
                 # Check for valid paths
-                option_val = path_prefix + self.config.get(x) + ',climos=yes '
+                option_val = path_prefix + self.config.get('user') + '/model_output' + self.config.get(x) + ',climos=yes '
             elif x == 'obs_path':
                 option_key = '--obs'
                 # Check for valid obs path
-                option_val = path_prefix + self.config.get(x) + ',climos=yes'
+                option_val = path_prefix + self.config.get('user') + 'obvservations/' + self.config.get(x) + ',climos=yes'
             elif x == 'outputdir':
                 option_key = '--outputdir'
                 # Check for valid outputdir
-                run_suffix = self.config.get('user') + '/' + self.config.get('run_name')
-                option_val = DIAG_OUTPUT_PREFIX + run_suffix + self.config.get(x)
+                run_suffix = self.config.get('user') + '/' + self.config.get('user') + '/diagnostic_output/' + self.config.get('run_name') + '_' + str(self.config.get('job_id'))
+                option_val = USER_DATA_PREFIX + run_suffix + self.config.get(x)
                 print_message(option_val)
                 if os.path.exists(option_val) and not os.path.isdir(option_val):
                     print_message("Attempting to overwrite directory")
