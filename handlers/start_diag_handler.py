@@ -17,13 +17,11 @@ class StartDiagHandler(object):
 
     def handle(self):
 
-        # command = ['./scripts/diag_run.sh'] + [' '.join(self.call_args)]
         msg = "Starting job with arguments: {}".format(self.call_args)
         print_message(msg, 'ok')
         args = ' '.join(self.call_args)
         process = Popen(args, stdin=PIPE, stdout=PIPE, stderr=PIPE, shell=True)
         return process.communicate()
-        return output
 
     def respond(self, response):
         msg = "Sending complete job to the dashboard with response {}".format(response)

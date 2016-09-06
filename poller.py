@@ -9,6 +9,7 @@ from util import print_debug, print_message
 from handlers.start_diag_handler import StartDiagHandler
 from handlers.start_model_handler import StartModelHandler
 from handlers.update_job_handler import UpdateJobHandler
+from handlers.upload_output_handler import UploadOutputHandler
 
 
 def poll():
@@ -33,7 +34,7 @@ def poll():
         options['user'] = job.get('user')
         options['run_name'] = job.get('run_name')
         options['job_id'] = job.get('job_id')
-        print_message(options, 'ok')
+        print_message('job options: {}'.format(options), 'ok')
     except Exception as e:
         print_debug(e)
         return -1
@@ -49,6 +50,8 @@ def poll():
         handler = StartModelHandler(options)
     elif run_type == 'update':
         handler = UpdateJobHandler(options)
+    elif run_type == 'upload_to_viewer':
+        handler = UploadOutputHandler(options)
     else:
         print_message("Unrecognized request: {}".format(run_type))
         return -1
@@ -66,10 +69,13 @@ def poll():
         print_debug(e)
         return -1
 
-    return
+    return 0
 
 
 if __name__ == "__main__":
     while(True):
-        poll()
+        retval = poll()
+        if retval:
+            print_message('Job run error')
+            # send error message to frontend poller
         time.sleep(5)
