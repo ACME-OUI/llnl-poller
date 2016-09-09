@@ -62,7 +62,7 @@ class StartDiagHandler(object):
             elif x == 'outputdir':
                 option_key = '--outputdir'
                 # Check for valid outputdir
-                run_suffix = self.config.get('user') + '/' \
+                run_suffix = self.config.get('user') \
                     + '/diagnostic_output/' \
                     + self.config.get('run_name') + '_' \
                     + str(self.config.get('job_id'))

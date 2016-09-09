@@ -1,7 +1,7 @@
 from constants import USER_DATA_PREFIX
 from constants import FRONTEND_POLLER_HOST
 from util import print_message, print_debug
-from output_viewer.diagsviewer import DiagnosticsViewerClient
+from diagsviewer import DiagnosticsViewerClient
 
 
 import requests
@@ -27,8 +27,13 @@ class UploadOutputHandler(object):
             print_debug(e)
             return -1
         path = self.options.get('path')
-        dataset_id = client.upload_package(path)
-        return dataset_id
+        print_message('Uploading directory {}'.format(path))
+        try:
+            dataset_id = client.upload_package(path)
+        except Exception as e:
+            print_debug(e)
+            return -1
+        return json.dumps({'dataset_id': dataset_id})
 
     def respond(self, response):
         msg = "Sending complete job to the dashboard with response {}".format(response)

@@ -27,7 +27,7 @@ def poll():
 
     if not job:
         print_message('No new jobs')
-        return -1
+        return 0
 
     try:
         options = job.get('request_attr')
@@ -63,6 +63,7 @@ def poll():
         print_debug(e)
         return -1
     try:
+        print_message('Sending message to frontend poller: {}'.format(response))
         handler.respond(response)
     except Exception as e:
         print_message("Error sending response to job \n {}".format(options))
