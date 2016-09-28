@@ -5,7 +5,8 @@ import sys
 import json
 
 from constants import FRONTEND_POLLER_HOST
-from util import print_debug, print_message
+from util import print_debug
+from util import print_message
 from handlers.start_diag_handler import StartDiagHandler
 from handlers.start_model_handler import StartModelHandler
 from handlers.update_job_handler import UpdateJobHandler
@@ -23,11 +24,11 @@ def poll():
     except Exception as e:
         print_message("Error requesting job from frontend poller")
         print_debug(e)
-        return -1
+        return -1, job['id']
 
     if not job:
         print_message('No new jobs')
-        return 0
+        return -2, None
 
     try:
         options = job.get('request_attr')
@@ -37,12 +38,12 @@ def poll():
         print_message('job options: {}'.format(options), 'ok')
     except Exception as e:
         print_debug(e)
-        return -1
+        return -1, options['job_id']
 
     run_type = job.get('run_type')
     if not run_type:
         print_message("No run type in job request")
-        return -1
+        return -1, None
 
     if run_type == 'diagnostic':
         handler = StartDiagHandler(options)
@@ -54,29 +55,41 @@ def poll():
         handler = UploadOutputHandler(options)
     else:
         print_message("Unrecognized request: {}".format(run_type))
-        return -1
+        return -1, None
 
     try:
         response = handler.handle()
     except Exception as e:
         print_message("Error in job handler with options \n {}".format(options))
         print_debug(e)
-        return -1
+        return -1, None
     try:
         print_message('Sending message to frontend poller: {}'.format(response))
         handler.respond(response)
     except Exception as e:
         print_message("Error sending response to job \n {}".format(options))
         print_debug(e)
-        return -1
+        return -1, None
 
-    return 0
+    return 0, None
 
 
 if __name__ == "__main__":
     while(True):
-        retval = poll()
+        retval, id = poll()
+        if retval == 0:
+            continue
         if retval:
             print_message('Job run error')
             # send error message to frontend poller
+            request = json.dumps({
+                'job_id': id,
+                'request': 'error',
+            })
+            url = 'http://' + FRONTEND_POLLER_HOST
+            try:
+                r = requests.post(url, request)
+            except Exception as e:
+                print_debug(e)
+                continue
         time.sleep(5)
