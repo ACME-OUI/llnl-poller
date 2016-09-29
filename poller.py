@@ -17,10 +17,10 @@ def poll():
 
     params = {'request': 'next'}
     url = 'http://' + FRONTEND_POLLER_HOST
+    options = {}
     try:
         job = requests.get(url, params).content
         job = json.loads(job)
-        print_message(job, 'ok')
     except Exception as e:
         print_message("Error requesting job from frontend poller")
         print_debug(e)
@@ -31,10 +31,11 @@ def poll():
         return -2, None
 
     try:
-        options = job.get('request_attr')
         options['user'] = job.get('user')
         options['run_name'] = job.get('run_name')
         options['job_id'] = job.get('job_id')
+        if not job.get('diag_type'):
+            options['diag_type'] = 'amwg'
         print_message('job options: {}'.format(options), 'ok')
     except Exception as e:
         print_debug(e)
@@ -46,6 +47,11 @@ def poll():
         return -1, None
 
     if run_type == 'diagnostic':
+        options['set'] = json.loads(job.get('diag_set'))
+        options['model_path'] = job.get('model_path')
+        options['obs_path'] = job.get('obs_path')
+        options['output_dir'] = job.get('output_dir')
+        print_message('Got a new job with parameters:\n{}'.format(options), 'ok')
         handler = StartDiagHandler(options)
     elif run_type == 'model':
         handler = StartModelHandler(options)

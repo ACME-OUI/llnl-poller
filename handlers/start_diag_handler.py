@@ -12,14 +12,14 @@ import os
 class StartDiagHandler(object):
 
     def __init__(self, config):
+        self.allowed_sets = ['1', '2', '3', '4', '5', '6', '7', '8', '9']
         self.config = config
         self.call_args = self.sanitize_input()
 
     def handle(self):
-
-        msg = "Starting job with arguments: {}".format(self.call_args)
-        print_message(msg, 'ok')
         args = ' '.join(self.call_args)
+        msg = "Starting job: {}".format(args)
+        print_message(msg, 'ok')
         process = Popen(args, stdin=PIPE, stdout=PIPE, stderr=PIPE, shell=True)
         return process.communicate()
 
@@ -42,47 +42,59 @@ class StartDiagHandler(object):
         args = ['metadiags']
         path_prefix = "path=" + USER_DATA_PREFIX
         for x in self.config:
+            print_message('key: {}\nval: {}'.format(x, self.config.get(x)))
             option_key = ''
             option_val = ''
             if x == 'diag_type':
                 option_key = '--package'
                 # Check for valid package
-                if self.config.get(x) != 'AMWG':
+                if self.config.get(x) != 'AMWG' and self.config.get(x) != 'amwg':
                     print_message("{} is not a valid package".format(self.config.get(x)))
                     return -1
                 option_val = self.config.get(x)
             elif x == 'model_path':
                 option_key = "--model "
                 # Check for valid paths
-                option_val = path_prefix + self.config.get('user') + '/model_output' + self.config.get(x) + ',climos=yes '
+                if os.path.exists(self.config.get(x)):
+                    option_val = 'path=' + self.config.get(x) + ',climos=yes'
+                else:
+                    print_message('model_path {} does not exist'.format(self.config.get(x)))
             elif x == 'obs_path':
                 option_key = '--obs'
                 # Check for valid obs path
-                option_val = path_prefix + self.config.get('user') + '/observations' + self.config.get(x) + ',climos=yes'
-            elif x == 'outputdir':
+                if os.path.exists(self.config.get(x)):
+                    option_val = 'path=' + self.config.get(x) + ',climos=yes'
+                else:
+                    print_message('model_path {} does not exist'.format(self.config.get(x)))
+            elif x == 'output_dir':
                 option_key = '--outputdir'
                 # Check for valid outputdir
-                run_suffix = self.config.get('user') \
-                    + '/diagnostic_output/' \
-                    + self.config.get('run_name') + '_' \
-                    + str(self.config.get('job_id'))
+                # run_suffix = self.config.get('user') \
+                #     + '/diagnostic_output/' \
+                #     + self.config.get('run_name') + '_' \
+                #     + str(self.config.get('job_id'))
 
-                option_val = USER_DATA_PREFIX + run_suffix + self.config.get(x)
+                # option_val = USER_DATA_PREFIX + run_suffix + self.config.get(x)
+                if not os.path.exists(self.config.get(x)):
+                    print_message('output_dir {} does not exist'.format(self.config.get(x)))
+                else:
+                    option_val = self.config.get(x)
                 print_message(option_val)
-                if os.path.exists(option_val) and not os.path.isdir(option_val):
-                    print_message("Attempting to overwrite directory")
-                    return -1
-                if not os.path.exists(option_val):
-                    os.makedirs(option_val)
             elif x == 'set':
                 option_key = '--set'
+                sets = []
+                for s in self.config.get(x):
+                    if s not in self.allowed_sets:
+                        print_message('invalid set: {}'.format(s))
+                    else:
+                        sets.append(s)
                 # Check for valid set
-                option_val = self.config.get(x)
+                option_val = ' '.join(sets)
             #
             # etc etc etc moar options
             #
             else:
-                print "Unrecognized option passed to diag handler \n{}".format(x)
+                print "Unrecognized option passed to diag handler: {}".format(x)
                 continue
             args.append(option_key)
             args.append(option_val)
