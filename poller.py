@@ -47,7 +47,12 @@ def poll():
         return -1, None
 
     if run_type == 'diagnostic':
-        options['set'] = json.loads(job.get('diag_set'))
+        try:
+            sets = json.loads(job.get('diag_set'))
+        except Exception as e:
+            print_message('Unable to unpack diag_set')
+            sets = '5'
+        options['set'] = sets
         options['model_path'] = job.get('model_path')
         options['obs_path'] = job.get('obs_path')
         options['output_dir'] = job.get('output_dir')
