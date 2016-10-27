@@ -21,13 +21,13 @@ def poll():
     try:
         job = requests.get(url, params).content
         job = json.loads(job)
-    except Exception as e:
+        print_message(job, 'ok')
+    except ConnectionError as ce:
         print_message("Error requesting job from frontend poller")
         print_debug(e)
-        return -1, job['id']
+        return -3, None
 
     if not job:
-        print_message('No new jobs')
         return -2, None
 
     try:
@@ -63,6 +63,10 @@ def poll():
     elif run_type == 'update':
         handler = UpdateJobHandler(options)
     elif run_type == 'upload_to_viewer':
+        options['server'] = job.get('request_attr').get('server')
+        options['username'] = job.get('request_attr').get('username')
+        options['password'] = job.get('request_attr').get('password')
+        options['path'] = job.get('request_attr').get('path')
         handler = UploadOutputHandler(options)
     else:
         print_message("Unrecognized request: {}".format(run_type))
@@ -89,6 +93,13 @@ if __name__ == "__main__":
     while(True):
         retval, id = poll()
         if retval == 0:
+            continue
+        elif retval == -2:
+            print_message('No new jobs', 'ok')
+            time.sleep(5)
+            continue
+        elif retval == -3:
+            time.sleep(5)
             continue
         if retval:
             print_message('Job run error')

@@ -16,8 +16,9 @@ class UploadOutputHandler(object):
         print_message(self.options)
 
     def handle(self):
+        server = self.options.get('server', 'http://pcmdi10.llnl.gov:8008/')
         client = DiagnosticsViewerClient(
-            server=self.options['server'],
+            server=server,
             cert=False)
         try:
             id, key = client.login(
@@ -52,6 +53,7 @@ class UploadOutputHandler(object):
 
     def sanitize_input(self, options):
         validated_options = {}
+        print_message(options, 'ok')
         expected_params = [
             'server',
             'username',
