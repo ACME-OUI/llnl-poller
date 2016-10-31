@@ -7,6 +7,7 @@ import json
 from constants import FRONTEND_POLLER_HOST
 from util import print_debug
 from util import print_message
+from requests.exceptions import ConnectionError
 from handlers.start_diag_handler import StartDiagHandler
 from handlers.start_model_handler import StartModelHandler
 from handlers.update_job_handler import UpdateJobHandler

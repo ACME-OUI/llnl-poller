@@ -5,6 +5,9 @@
 # hostname of the server running the frontend poller application
 FRONTEND_POLLER_HOST = 'aims2.llnl.gov:8000/poller/update/'
 
+# hostname of the diagnostic output viewer
+DIAG_VIEWER_HOST = 'http://pcmdi10.llnl.gov:8008/'
+
 # diagnostic path base
 DIAG_PATH_PREFIX = '/export/baldwin32/diags'
 

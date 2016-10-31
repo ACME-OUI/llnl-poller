@@ -16,7 +16,7 @@ class StartDiagHandler(object):
         self.allowed_sets = ['1', '2', '3', '4', '5', '6', '7', '8', '9']
         self.config = config
         self.call_args = self.sanitize_input()
-        self.call_args.append('--dryrun')
+        # self.call_args.append('--dryrun')
 
     def handle(self):
         args = ' '.join(self.call_args)

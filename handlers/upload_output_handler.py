@@ -1,5 +1,6 @@
 from constants import USER_DATA_PREFIX
 from constants import FRONTEND_POLLER_HOST
+from constants import DIAG_VIEWER_HSOT
 from util import print_message, print_debug
 from diagsviewer import DiagnosticsViewerClient
 
@@ -16,7 +17,7 @@ class UploadOutputHandler(object):
         print_message(self.options)
 
     def handle(self):
-        server = self.options.get('server', 'http://pcmdi10.llnl.gov:8008/')
+        server = self.options.get('server', DIAG_VIEWER_HSOT)
         client = DiagnosticsViewerClient(
             server=server,
             cert=False)
